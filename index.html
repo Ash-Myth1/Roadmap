@@ -19,10 +19,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --bg-color: #FDFBF8;
+            --text-primary: #3f3f46;
+            --text-secondary: #52525b;
+            --accent-teal-dark: #115e59;
+            --accent-teal: #0d9488;
+            --accent-teal-light: #14b8a6;
+            --card-bg: #ffffff;
+            --shadow-color: 220 3% 15%;
+            --shadow-strength: 2%;
+            --shadow: 0 3px 5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
+                      0 12px 20px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%));
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #FDFBF8; /* Warm off-white */
-            color: #3f3f46; /* Zinc 700 */
+            background-color: var(--bg-color);
+            color: var(--text-primary);
         }
         .chart-container {
             position: relative;
@@ -42,15 +55,41 @@
             transition: color 0.3s, border-color 0.3s;
         }
         .nav-link:hover, .nav-link.active {
-            color: #0d9488; /* Teal 600 */
-            border-color: #0d9488;
+            color: var(--accent-teal);
+            border-color: var(--accent-teal);
         }
-        .tab-button.active {
-            background-color: #14b8a6; /* Teal 500 */
-            color: white;
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 8px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%)),
+                        0 15px 25px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 7%));
         }
         .tab-button {
             transition: background-color 0.3s, color 0.3s;
+        }
+        .tab-button.active {
+            background-color: var(--accent-teal-light);
+            color: white;
+        }
+        h1, h2 {
+            background: linear-gradient(45deg, var(--accent-teal-dark), var(--accent-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tooltip-custom {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .group:hover .tooltip-custom {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -90,7 +129,7 @@
 
         <!-- Section 1: Overview -->
         <section id="overview" class="text-center mb-24 scroll-mt-20">
-            <h1 class="text-4xl md:text-5xl font-bold text-teal-800 mb-4">Pneumonia Classification from Chest X-Rays</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Pneumonia Classification from Chest X-Rays</h1>
             <p class="max-w-3xl mx-auto text-lg text-gray-600">
                 An interactive exploration of a deep learning project to build a Computer-Aided Diagnosis (CAD) system. This application breaks down the complete project roadmap, from understanding the clinical need to deploying an interpretable AI model that can differentiate between Normal, Bacterial, and Viral pneumonia.
             </p>
@@ -102,7 +141,7 @@
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Every machine learning project begins with data. This section explores the dataset's characteristics, the critical challenge of class imbalance, and the necessary steps taken to ensure a robust and reliable foundation for modeling.</p>
             
             <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="card">
                     <h3 class="text-xl font-semibold text-center mb-4">Dataset Class Distribution</h3>
                     <div class="chart-container">
                         <canvas id="classDistributionChart"></canvas>
@@ -112,12 +151,12 @@
 
                 <div class="space-y-6">
                     <h3 class="text-xl font-semibold text-center md:text-left mb-4">Curation: From Flawed to Robust</h3>
-                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="card">
                         <h4 class="font-semibold text-lg mb-3 text-red-600">Problem: A Flawed Validation Set</h4>
                         <p class="text-gray-600">The original dataset's validation set is too small and not representative, missing entire classes. This flaw would lead to misleading performance evaluation and an unreliable model.</p>
                     </div>
                     <div class="text-center text-2xl font-bold text-gray-400">↓</div>
-                     <div class="bg-white p-6 rounded-lg shadow-lg">
+                     <div class="card">
                         <h4 class="font-semibold text-lg mb-3 text-green-600">Solution: A New Stratified Split</h4>
                         <ol class="list-decimal list-inside space-y-2 text-gray-700">
                             <li><strong>Combine Data:</strong> Merge the original `train` and `val` folders into a single data pool.</li>
@@ -134,7 +173,7 @@
             <h2 class="text-3xl font-bold text-center mb-2">The Preprocessing Pipeline</h2>
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">Raw images are not suitable for deep learning models. They must be transformed through a carefully designed pipeline to ensure consistency and enhance features. Explore the key steps that prepare the data for training.</p>
             
-            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <div class="max-w-4xl mx-auto card md:p-8">
                 <div class="mb-6 border-b border-gray-200">
                     <nav class="flex flex-wrap -mb-px" id="pipeline-tabs">
                         <!-- Tab buttons will be inserted here by JS -->
@@ -152,7 +191,7 @@
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">With prepared data, the next step is to build and train the classification models. This project leverages transfer learning, a powerful technique for adapting state-of-the-art architectures to new problems.</p>
 
             <div class="grid lg:grid-cols-5 gap-8">
-                <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                <div class="lg:col-span-2 card">
                     <h3 class="text-xl font-semibold mb-4">The Fine-Tuning Process</h3>
                     <p class="text-gray-600 mb-4">Fine-tuning adapts a pre-trained model to our specific X-ray dataset in two careful phases to maximize performance without losing valuable learned knowledge.</p>
                     <div class="space-y-4">
@@ -166,7 +205,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-lg">
+                <div class="lg:col-span-3 card">
                      <h3 class="text-xl font-semibold mb-4">Candidate Architectures</h3>
                      <p class="text-gray-600 mb-6">Several state-of-the-art CNN architectures were selected for a comparative analysis to identify the best performer for this specific clinical task.</p>
                      <div class="grid grid-cols-2 gap-4 text-center">
@@ -197,14 +236,14 @@
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">How do we measure success? Due to the class imbalance, simple accuracy is misleading. This dashboard uses more nuanced metrics to provide a true picture of model performance on the unseen test data.</p>
             
             <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="card">
                     <h3 class="text-xl font-semibold text-center mb-4">Model Performance Comparison</h3>
                     <p class="text-center text-sm text-gray-500 mb-4">The Macro F1-Score is the primary metric as it treats each class equally, providing a balanced measure of performance despite the data imbalance.</p>
                     <div class="chart-container h-96">
                         <canvas id="modelPerformanceChart"></canvas>
                     </div>
                 </div>
-                <div class="bg-white p-6 rounded-lg shadow-lg">
+                <div class="card">
                     <h3 class="text-xl font-semibold text-center mb-4">Best Model: Confusion Matrix</h3>
                     <p class="text-center text-sm text-gray-500 mb-4">The confusion matrix for the best model (DenseNet121) shows where it succeeds and where it makes errors. Hover over any cell for an explanation.</p>
                     <div id="confusionMatrix" class="w-full overflow-x-auto">
@@ -219,7 +258,7 @@
             <h2 class="text-3xl font-bold text-center mb-2">Model Interpretability: The "Why"</h2>
             <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">A prediction is not enough in medicine; we need to understand the reasoning behind it. Using Grad-CAM, we can visualize the regions of an X-ray that the model found most important for its decision, ensuring it's learning clinically relevant features.</p>
 
-            <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
+            <div class="card md:p-8">
                 <div class="text-center mb-6">
                     <div class="inline-flex rounded-md shadow-sm" role="group" id="gradcam-controls">
                         <!-- Grad-CAM buttons will be inserted here by JS -->
@@ -427,7 +466,7 @@
                     const tooltip = appData.confusionMatrix.tooltips[i][j];
                     tableHTML += `<td class="p-4 border ${colorClass} relative group cursor-help">
                                     ${cell}
-                                    <span class="absolute bottom-full mb-2 w-48 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">${tooltip}</span>
+                                    <span class="tooltip-custom absolute bottom-full mb-2 w-48 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs rounded py-1 px-2 pointer-events-none z-10">${tooltip}</span>
                                  </td>`;
                 });
                 tableHTML += `</tr>`;
